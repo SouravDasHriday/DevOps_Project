@@ -10,5 +10,5 @@
 #ansible installation
 
 #sudo yum update
-#sudo amazon-linux-extras install ansible2
+#sudo yum install ansible-core -y
 #ansible --version
