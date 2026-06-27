@@ -23,9 +23,13 @@ export ANSIBLE_HOST_KEY_CHECKING=False
 
 ansible all \
     -i /opt/ansible/inventory/aws_ec2.yaml \
+    -u ec2-user \
+    --private-key=/opt/ansible/1st_key.pem \
     -m wait_for_connection \
     -a "timeout=300"
 
 ansible-playbook \
     -i /opt/ansible/inventory/aws_ec2.yaml \
+    -u ec2-user \
+    --private-key=/opt/ansible/1st_key.pem \
     apache.yaml
