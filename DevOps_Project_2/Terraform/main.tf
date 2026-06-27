@@ -15,12 +15,16 @@ data "aws_ami" "amazon-linux" {
 }
 
 resource "aws_instance" "dev_machine" {
-  ami = data.aws_ami.amazon-linux.id
-  instance_type = "t2.micro"
-  key_name = "1st_key"
+  ami                    = data.aws_ami.amazon-linux.id
+  instance_type          = "t2.micro"
+  key_name               = "1st_key"
+
+  vpc_security_group_ids = [
+    aws_security_group.web_sg.id
+  ]
 
   tags = {
     Environment = "dev"
-    Name = "${var.name}-server"
+    Name        = "${var.name}-server"
   }
 }
