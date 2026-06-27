@@ -1,32 +1,42 @@
-- name: This sets up an httpd webserver
+- name: Configure Apache web server
   hosts: aws_ec2
   become: yes
   remote_user: ec2-user
-  gather_facts: true
+  gather_facts: yes
+
   vars:
-    ansible_ssh_private_key_file: "/etc/ansible/euran-jenkins.pem"  
-    ansible_ssh_user: "ec2-user"
+    apache_ssh_private_key: "/opt/ansible/keys/1st_key.pem"
   tasks:
-  - name: "Install httpd and php packages"
-    package:
+    - name: Update all packages to the latest version
+      yum:
+        name: "*"
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    - name: Install required packages
+      package:
         name:
-          - "httpd"
-          - "php"
+          - httpd
+          - php
+          - git
+          - wget
         state: present
-  - name: "copy code from GitHub"
-    get_url:
-        url: https://www.shubhammishra.in
-        dest: "/var/www/html/index.php"
-  - name: "Start httpd services"
-    service:
+
+    - name: Deploy the application code from GitHub
+      git:
+        repo: "https://github.com/SouravDasHriday/ansible-web-demo.git"
+        dest: "/var/www/html"
+        version: "main"
+        force: true
+
+    - name: Download and install terraform
+      unarchive:
+        src: "https://releases.hashicorp.com/terraform/1.15.7/terraform_1.15.7_linux_arm64.zip"
+        dest: "/usr/local/bin/"
+        remote_src: yes
+        mode: '0755'
+    - name: Start and enable Apache service
+      service:
         name: httpd
         state: started
-  - name: Yum Install Packages
-    yum: name={{item}} state=latest
-    with_items:
-       - wget
-  - name: terraform install
-    unarchive:
-      src: https://releases.hashicorp.com/terraform/0.9.1/terraform_0.9.1_linux_amd64.zip
-      dest: /usr/bin
-      remote_src: True
+        enabled: true
