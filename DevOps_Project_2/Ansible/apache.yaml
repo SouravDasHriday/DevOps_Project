@@ -5,7 +5,7 @@
   gather_facts: yes
 
   vars:
-    apache_ssh_private_key: "/opt/ansible/keys/1st_key.pem"
+    apache_ssh_private_key: "/opt/ansible/1st_key.pem"
   tasks:
     - name: Update all packages to the latest version
       yum:
